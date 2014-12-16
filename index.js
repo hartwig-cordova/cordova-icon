@@ -50,6 +50,15 @@ var getPlatforms = function (projectName) {
             { name : 'drawable-xxhdpi/icon.png', size : 144 },
         ]
     });
+    platforms.push({
+        name : 'blackberry10',
+        iconsPath : 'platforms/blackberry10/www/res/blackberry10/',
+        isAdded : fs.existsSync('platforms/blackberry10'),
+        icons : [
+            { name : 'icon-86.png',       size : 86 },
+            { name : 'icon-150.png',      size : 150 },
+        ]
+    });
     // TODO: add all platforms
     deferred.resolve(platforms);
     return deferred.promise;
