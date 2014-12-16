@@ -1,9 +1,9 @@
-var fs     = require('fs');
+var fs = require('fs');
 var xml2js = require('xml2js');
-var ig     = require('imagemagick');
+var ig = require('imagemagick');
 var colors = require('colors');
-var _      = require('underscore');
-var Q      = require('q');
+var _ = require('underscore');
+var Q = require('q');
 
 ig.convert.path = "C:\\xampp\\ImageMagick-6.8.9-0\\convert.exe";
 
@@ -13,52 +13,60 @@ ig.convert.path = "C:\\xampp\\ImageMagick-6.8.9-0\\convert.exe";
  * @param  {String} projectName
  * @return {Promise} resolves with an array of platforms
  */
-var getPlatforms = function (projectName) {
+var getPlatforms = function(projectName) {
     var deferred = Q.defer();
     var platforms = [];
     platforms.push({
-        name : 'ios',
-        // TODO: use async fs.exists
-        isAdded : fs.existsSync('platforms/ios'),
-        iconsPath : 'platforms/ios/' + projectName + '/Resources/icons/',
-        icons : [
-            { name : 'icon-40.png',       size : 40  },
-            { name : 'icon-40@2x.png',    size : 80  },
-            { name : 'icon-50.png',       size : 50  },
-            { name : 'icon-50@2x.png',    size : 100 },
-            { name : 'icon-60.png',       size : 60  },
-            { name : 'icon-60@2x.png',    size : 120 },
-            { name : 'icon-60@3x.png',    size : 180 },
-            { name : 'icon-72.png',       size : 72  },
-            { name : 'icon-72@2x.png',    size : 144 },
-            { name : 'icon-76.png',       size : 76  },
-            { name : 'icon-76@2x.png',    size : 152 },
-            { name : 'icon-small.png',    size : 29  },
-            { name : 'icon-small@2x.png', size : 58  },
-            { name : 'icon.png',          size : 57  },
-            { name : 'icon@2x.png',       size : 114 },
+        name: 'ios',
+        iconsPath: 'res/ios/',
+        isAdded: fs.existsSync('platforms/ios'),
+        icons: [
+            {name: 'icon-40.png', size: 40},
+            {name: 'icon-40@2x.png', size: 80},
+            {name: 'icon-50.png', size: 50},
+            {name: 'icon-50@2x.png', size: 100},
+            {name: 'icon-60.png', size: 60},
+            {name: 'icon-60@2x.png', size: 120},
+            {name: 'icon-60@3x.png', size: 180},
+            {name: 'icon-72.png', size: 72},
+            {name: 'icon-72@2x.png', size: 144},
+            {name: 'icon-76.png', size: 76},
+            {name: 'icon-76@2x.png', size: 152},
+            {name: 'icon-small.png', size: 29},
+            {name: 'icon-small@2x.png', size: 58},
+            {name: 'icon.png', size: 57},
+            {name: 'icon@2x.png', size: 114}
         ]
     });
     platforms.push({
-        name : 'android',
-        iconsPath : 'platforms/android/res/',
-        isAdded : fs.existsSync('platforms/android'),
-        icons : [
-            { name : 'drawable/icon.png',       size : 96 },
-            { name : 'drawable-hdpi/icon.png',  size : 72 },
-            { name : 'drawable-ldpi/icon.png',  size : 36 },
-            { name : 'drawable-mdpi/icon.png',  size : 48 },
-            { name : 'drawable-xhdpi/icon.png', size : 96 },
-            { name : 'drawable-xxhdpi/icon.png', size : 144 },
+        name: 'android',
+        iconsPath: 'res/android/',
+        isAdded: fs.existsSync('platforms/android'),
+        icons: [
+            {name: 'icon.png', size: 96},
+            {name: 'icon-hdpi.png', size: 72},
+            {name: 'icon-ldpi.png', size: 36},
+            {name: 'icon-mdpi.png', size: 48},
+            {name: 'icon-xhdpi.png', size: 96},
+            {name: 'icon-xxhdpi.png', size: 144}
         ]
     });
     platforms.push({
-        name : 'blackberry10',
-        iconsPath : 'platforms/blackberry10/res/',
-        isAdded : fs.existsSync('platforms/blackberry10'),
-        icons : [
-            { name : 'icon-86.png',       size : 86 },
-            { name : 'icon-150.png',      size : 150 },
+        name: 'blackberry10',
+        iconsPath: 'res/blackberry10/',
+        isAdded: fs.existsSync('platforms/blackberry10'),
+        icons: [
+            {name: 'icon-86.png', size: 86},
+            {name: 'icon-150.png', size: 150}
+        ]
+    });
+    platforms.push({
+        name: 'wp8',
+        iconsPath: 'res/wp8/',
+        isAdded: fs.existsSync('platforms/wp8'),
+        icons: [
+            {name: 'ApplicationIcon.png', size: 99},
+            {name: 'Background.png', size: 159}
         ]
     });
     // TODO: add all platforms
@@ -73,21 +81,21 @@ var getPlatforms = function (projectName) {
  */
 var settings = {};
 settings.CONFIG_FILE = 'config.xml';
-settings.ICON_FILE   = 'icon.png';
+settings.ICON_FILE = 'icon.png';
 
 /**
  * @var {Object} console utils
  */
 var display = {};
-display.success = function (str) {
+display.success = function(str) {
     str = '✓  '.green + str;
     console.log('  ' + str);
 };
-display.error = function (str) {
+display.error = function(str) {
     str = '✗  '.red + str;
     console.log('  ' + str);
 };
-display.header = function (str) {
+display.header = function(str) {
     console.log('');
     console.log(' ' + str.cyan.underline);
     console.log('');
@@ -98,15 +106,15 @@ display.header = function (str) {
  *
  * @return {Promise} resolves to a string - the project's name
  */
-var getProjectName = function () {
+var getProjectName = function() {
     var deferred = Q.defer();
     var parser = new xml2js.Parser();
-    data = fs.readFile(settings.CONFIG_FILE, function (err, data) {
-        if (err) {
+    data = fs.readFile(settings.CONFIG_FILE, function(err, data) {
+        if(err) {
             deferred.reject(err);
         }
-        parser.parseString(data, function (err, result) {
-            if (err) {
+        parser.parseString(data, function(err, result) {
+            if(err) {
                 deferred.reject(err);
             }
             var projectName = result.widget.name[0];
@@ -123,7 +131,7 @@ var getProjectName = function () {
  * @param  {Object} icon
  * @return {Promise}
  */
-var generateIcon = function (platform, icon) {
+var generateIcon = function(platform, icon) {
     var deferred = Q.defer();
     ig.resize({
         srcPath: settings.ICON_FILE,
@@ -132,8 +140,8 @@ var generateIcon = function (platform, icon) {
         format: 'png',
         width: icon.size,
         height: icon.size
-    } , function(err, stdout, stderr){
-        if (err) {
+    }, function(err, stdout, stderr) {
+        if(err) {
             deferred.reject(err);
         } else {
             deferred.resolve();
@@ -149,17 +157,17 @@ var generateIcon = function (platform, icon) {
  * @param  {Object} platform
  * @return {Promise}
  */
-var generateIconsForPlatform = function (platform) {
+var generateIconsForPlatform = function(platform) {
     var deferred = Q.defer();
     display.header('Generating Icons for ' + platform.name);
     var all = [];
     var icons = platform.icons;
-    icons.forEach(function (icon) {
+    icons.forEach(function(icon) {
         all.push(generateIcon(platform, icon));
     });
-    Q.all(all).then(function () {
+    Q.all(all).then(function() {
         deferred.resolve();
-    }).catch(function (err) {
+    }).catch(function(err) {
         console.log(err);
     });
     return deferred.promise;
@@ -167,21 +175,21 @@ var generateIconsForPlatform = function (platform) {
 
 /**
  * Goes over all the platforms and triggers icon generation
- * 
+ *
  * @param  {Array} platforms
  * @return {Promise}
  */
-var generateIcons = function (platforms) {
+var generateIcons = function(platforms) {
     var deferred = Q.defer();
     var sequence = Q();
     var all = [];
-    _(platforms).where({ isAdded : true }).forEach(function (platform) {
-        sequence = sequence.then(function () {
+    _(platforms).where({isAdded: true}).forEach(function(platform) {
+        sequence = sequence.then(function() {
             return generateIconsForPlatform(platform);
         });
         all.push(sequence);
     });
-    Q.all(all).then(function () {
+    Q.all(all).then(function() {
         deferred.resolve();
     });
     return deferred.promise;
@@ -192,11 +200,11 @@ var generateIcons = function (platforms) {
  *
  * @return {Promise} resolves if at least one platform was found, rejects otherwise
  */
-var atLeastOnePlatformFound = function () {
+var atLeastOnePlatformFound = function() {
     var deferred = Q.defer();
-    getPlatforms().then(function (platforms) {
-        var activePlatforms = _(platforms).where({ isAdded : true });
-        if (activePlatforms.length > 0) {
+    getPlatforms().then(function(platforms) {
+        var activePlatforms = _(platforms).where({isAdded: true});
+        if(activePlatforms.length > 0) {
             display.success('platforms found: ' + _(activePlatforms).pluck('name').join(', '));
             deferred.resolve();
         } else {
@@ -212,10 +220,10 @@ var atLeastOnePlatformFound = function () {
  *
  * @return {Promise} resolves if exists, rejects otherwise
  */
-var validIconExists = function () {
+var validIconExists = function() {
     var deferred = Q.defer();
-    fs.exists(settings.ICON_FILE, function (exists) {
-        if (exists) {
+    fs.exists(settings.ICON_FILE, function(exists) {
+        if(exists) {
             display.success(settings.ICON_FILE + ' exists');
             deferred.resolve();
         } else {
@@ -231,10 +239,10 @@ var validIconExists = function () {
  *
  * @return {Promise} resolves if exists, rejects otherwise
  */
-var configFileExists = function () {
+var configFileExists = function() {
     var deferred = Q.defer();
-    fs.exists(settings.CONFIG_FILE, function (exists) {
-        if (exists) {
+    fs.exists(settings.CONFIG_FILE, function(exists) {
+        if(exists) {
             display.success(settings.CONFIG_FILE + ' exists');
             deferred.resolve();
         } else {
@@ -253,10 +261,10 @@ atLeastOnePlatformFound()
     .then(getProjectName)
     .then(getPlatforms)
     .then(generateIcons)
-    .catch(function (err) {
-        if (err) {
+    .catch(function(err) {
+        if(err) {
             console.log(err);
         }
-    }).then(function () {
+    }).then(function() {
         console.log('');
     });
