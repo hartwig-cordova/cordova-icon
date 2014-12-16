@@ -5,6 +5,8 @@ var colors = require('colors');
 var _      = require('underscore');
 var Q      = require('q');
 
+ig.convert.path = "C:\\xampp\\ImageMagick-6.8.9-0\\convert.exe";
+
 /**
  * Check which platforms are added to the project and return their icon names and sized
  *
@@ -48,6 +50,15 @@ var getPlatforms = function (projectName) {
             { name : 'drawable-mdpi/icon.png',  size : 48 },
             { name : 'drawable-xhdpi/icon.png', size : 96 },
             { name : 'drawable-xxhdpi/icon.png', size : 144 },
+        ]
+    });
+    platforms.push({
+        name : 'blackberry10',
+        iconsPath : 'platforms/blackberry10/res/',
+        isAdded : fs.existsSync('platforms/blackberry10'),
+        icons : [
+            { name : 'icon-86.png',       size : 86 },
+            { name : 'icon-150.png',      size : 150 },
         ]
     });
     // TODO: add all platforms
@@ -120,7 +131,7 @@ var generateIcon = function (platform, icon) {
         quality: 1,
         format: 'png',
         width: icon.size,
-        height: icon.size,
+        height: icon.size
     } , function(err, stdout, stderr){
         if (err) {
             deferred.reject(err);
